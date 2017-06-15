@@ -28,7 +28,7 @@ def preprocess(x):
     x = x[:, :, :, ::-1]
     return x
 
-content_img_path = 'lena.jpg'
+content_img_path = 'IMG_20170425_103945.jpg'
 content_img = Image.open(content_img_path)
 content_img = content_img.resize((height, width))
 content_arr = np.asarray(content_img, dtype='float32')
@@ -76,7 +76,7 @@ def style_loss(style, combination):
     c = gram_matrix(combination)
     channels = 3
     size = height * width
-    return backend.sum(backend.square(s - c) / (4. * (channels ** 2) * (size ** 2)))
+    return backend.sum(backend.square(s - c)) / (4. * (channels ** 2) * (size ** 2))
 
 feature_layers = ['block1_conv2', 'block2_conv2', 'block3_conv3', 'block4_conv3', 'block5_conv3']
 
@@ -89,7 +89,7 @@ for layer_name in feature_layers:
 
 def total_variation_loss(x):
     a = backend.square(x[:, :height - 1, :width - 1, :] - x[:, 1:, :width - 1, :])
-    b = backend.square(x[:, :height - 1, :width - 1, :] - x[:, :height - 1, :1, :])
+    b = backend.square(x[:, :height - 1, :width - 1, :] - x[:, :height - 1, 1:, :])
     return backend.sum(backend.pow(a + b, 1.25))
 
 loss += w * total_variation_loss(combination_img)
@@ -146,4 +146,4 @@ for i in range(iteration):
     y = np.clip(y, 0, 255).astype('uint8')
 
     img = Image.fromarray(y)
-    imsave('lena_%d.jpg' % i, img)
+    imsave('merlion_%d.jpg' % i, img)
